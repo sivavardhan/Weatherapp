@@ -26,7 +26,7 @@ The app is designed using the MVVM-C architecture:
 - **Model**: Contains data structures such as 'WeatherObj', 'ResultCitiesModel'
 - **ViewModel**: Includes classes like 'WeatherViewModel' and 'SearchCityViewModel' that handle data fetching, processing, and provide data to the views.
 - **View**: Consists of view controllers and UI components that present the data to the user.
-- - **Coordinator** Handles The Navigation logic, bettween the screens
+- **Coordinator** Handles The Navigation logic, bettween the screens
 
 
 ## Unit Testing
@@ -36,4 +36,4 @@ The app is designed using the MVVM-C architecture:
 
 
 # Known issues
-- Error Handling Not updating to UI, Just Printing on Cosole. Due to time Constarins not able to finish. If get time will finish that also
+- City selection saving into storage, but weather data not finding in API calls. Due to time constarints not able to fix this 
