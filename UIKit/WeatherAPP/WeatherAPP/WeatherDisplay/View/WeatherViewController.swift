@@ -101,14 +101,21 @@ extension WeatherViewController
             }
             .store(in: &cancellable) // Store the resulting Combine pipeline in the cancellables set to manage memory and lifecycle..
         
+        // Observe changes to the 'isPageNotFound' property of the view model
         viewModel?.$isPageNotFound
+        // Ensure updates are received on the main thread
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: {  [weak self] _ in
-                self?.showErrorAlert(withMessage: "The Specified Weather data Not found, Please select another City from Search")
+        // Subscribe to changes and handle the received value
+            .sink(receiveValue: {  [weak self] isPageError in
+                // Use weak self to avoid retain cycles
+                if let pageError = isPageError , pageError == true
+                {
+                    // If 'isPageError' is true, display an error alert to the user
+                    self?.showErrorAlert(withMessage: "The Specified Weather data Not found, Please select another City from Search")
+
+                }
             })
-            .store(in: &cancellable)
-        
-        
+            .store(in: &cancellable)     // Store the cancellable to manage the subscription's lifecycle
     }
     func updateUIElements(){
         if let weatherObj = viewModel?.weatherObject
@@ -152,94 +159,105 @@ extension WeatherViewController
 extension WeatherViewController
 {
     func createUIElements() {
-        self.cityNameLbl.font = UIFont.boldSystemFont(ofSize: 30.0)
-        self.cityNameLbl.text = "City Name"
-        self.dateLbl.text = "City Name"
+        // Configure the city name label
+        self.cityNameLbl.font = UIFont.boldSystemFont(ofSize: 30.0) // Set the font to bold with size 30
         
+        // Accessibility settings for city name label
         self.cityNameLbl.isAccessibilityElement = true
         self.cityNameLbl.accessibilityHint = "Dispalying City Information"
-        self.cityNameLbl.accessibilityLabel = "City Name is Dallas"
+        self.cityNameLbl.accessibilityLabel = "City Name"
         
-        
-        self.dateLbl.font = UIFont.systemFont(ofSize: 17.0)
+        // Configure the date label
+        self.dateLbl.font = UIFont.systemFont(ofSize: 17.0) // Set the font to system font with size 17
+
+        // Create a vertical stack view to arrange city name and date labels
         let verticalStackView = UIStackView(arrangedSubviews: [self.cityNameLbl, self.dateLbl])
-        verticalStackView.axis = .vertical
-        verticalStackView.spacing = 8
-        verticalStackView.alignment = .leading
-        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+        verticalStackView.axis = .vertical // Arrange subviews vertically
+        verticalStackView.spacing = 8 // Set spacing between subviews
+        verticalStackView.alignment = .leading // Align subviews to the leading edge
+        verticalStackView.translatesAutoresizingMaskIntoConstraints = false // Use Auto Layout constraints
         
         
-        
+        // Configure the weather icon image view
         self.weatherIconImageview = UIImageView(image: UIImage(systemName: "cloud.sun.rain"))
-        self.weatherIconImageview.contentMode = .scaleAspectFill
-        self.weatherIconImageview.widthAnchor.constraint(equalToConstant: 40).isActive = true
-        self.weatherIconImageview.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        self.weatherIconImageview.contentMode = .scaleAspectFill // Scale the image to fill the view
+        self.weatherIconImageview.widthAnchor.constraint(equalToConstant: 40).isActive = true // Set width constraint
+        self.weatherIconImageview.heightAnchor.constraint(equalToConstant: 50).isActive = true // Set height constraint
         self.weatherIconImageview.isAccessibilityElement = true
-//        self.weatherIconImageview.accessibilityHint = "Weather Status ICON"
-//        self.weatherIconImageview.accessibilityTraits = .image
+        self.weatherIconImageview.accessibilityTraits = .image
         
-        self.weatherStatus.font = UIFont.systemFont(ofSize: 17.0)
-        self.weatherStatus.text = "Cloudydfghhfgh"
-        
-        let weatherStatusStackView = UIStackView(arrangedSubviews: [self.weatherIconImageview,self.weatherStatus])
+        // Configure the weather status label
+        self.weatherStatus.font = UIFont.systemFont(ofSize: 17.0) // Set the font to system font with size 17
         self.weatherStatus.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        weatherStatusStackView.axis = .vertical
-        weatherStatusStackView.spacing = 8
-        weatherStatusStackView.alignment = .leading
-        weatherStatusStackView.translatesAutoresizingMaskIntoConstraints = false
+        // Set height constraint for weather status label
+
         
+        // Create a stack view for weather status and icon
+        let weatherStatusStackView = UIStackView(arrangedSubviews: [self.weatherIconImageview,self.weatherStatus])
+        weatherStatusStackView.axis = .vertical // Arrange subviews vertically
+        weatherStatusStackView.spacing = 8 // Set spacing between subviews
+        weatherStatusStackView.alignment = .leading // Align subviews to the leading edge
+        weatherStatusStackView.translatesAutoresizingMaskIntoConstraints = false // Use Auto Layout constraints
         
-        self.fellsLikeLbl.font = UIFont.systemFont(ofSize: 30.0)
-        self.fellsLikeLbl.text = "299"
+        // Configure the "Feels Like" label
+        self.fellsLikeLbl.font = UIFont.systemFont(ofSize: 30.0) // Set the font to system font with size 30
+        
+        // Create a horizontal stack view for weather status and "Feels Like" label
+
         let weatherStatusStackView1 = UIStackView(arrangedSubviews: [weatherStatusStackView,self.fellsLikeLbl])
-        weatherStatusStackView1.axis = .horizontal
-        weatherStatusStackView1.spacing = 8
-        weatherStatusStackView1.alignment = .leading
-        weatherStatusStackView1.translatesAutoresizingMaskIntoConstraints = false
+        weatherStatusStackView1.axis = .horizontal // Arrange subviews horizontally
+        weatherStatusStackView1.spacing = 8 // Set spacing between subviews
+        weatherStatusStackView1.alignment = .leading // Align subviews to the leading edge
+        weatherStatusStackView1.translatesAutoresizingMaskIntoConstraints = false // Use Auto Layout constraints
         
-        // Add views to the main view
-        self.view.addSubview(verticalStackView)
-        // Add views to the main view
-        self.view.addSubview(verticalStackView)
-        self.view.addSubview(weatherStatusStackView1)
+        // Configure maximum and minimum temperature labels
+        self.maximumLbl.font = UIFont.systemFont(ofSize: 25)
+        self.minimumLbl.font = UIFont.systemFont(ofSize: 25)
         
+        // Create a horizontal stack view for maximum and minimum temperature labels
+        let maxAndMinStackView = UIStackView(arrangedSubviews: [self.maximumLbl,self.minimumLbl])
+        maxAndMinStackView.axis = .horizontal
+        maxAndMinStackView.spacing = 8
+        maxAndMinStackView.alignment = .leading
+        maxAndMinStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        
+        // Configure the city image view
         self.cityImageView.image = UIImage(named: "image.jpg")
-        self.cityImageView.contentMode = .scaleToFill
-        self.cityImageView.translatesAutoresizingMaskIntoConstraints = false
+        self.cityImageView.contentMode = .scaleToFill // Scale the image to fill the view
+        self.cityImageView.translatesAutoresizingMaskIntoConstraints = false // Use Auto Layout constraints
         self.cityImageView.isAccessibilityElement = true
         
-        self.view.addSubview(self.cityImageView)
         
-        // Vertical stack constraints
+        self.view.addSubview(verticalStackView) // Add verticalStackView to the main view
+        self.view.addSubview(weatherStatusStackView1) // Add weatherStatusStackView1 to the main view
+        self.view.addSubview(self.cityImageView) // Add the city image view to the main view
+        self.view.addSubview(maxAndMinStackView) // Add the max and min stack view to the main view
+        
+        // Set up constraints for vertical stack view
         NSLayoutConstraint.activate([
             verticalStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             verticalStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             verticalStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
             
         ])
-
+        // Set up constraints for weather status stack view
         NSLayoutConstraint.activate([
             weatherStatusStackView1.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor,constant: 20),
             weatherStatusStackView1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             weatherStatusStackView1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
         
-
-        self.maximumLbl.font = UIFont.systemFont(ofSize: 25)
-        self.minimumLbl.font = UIFont.systemFont(ofSize: 25)
         
-        let maxAndMinStackView = UIStackView(arrangedSubviews: [self.maximumLbl,self.minimumLbl])
-        maxAndMinStackView.axis = .horizontal
-        maxAndMinStackView.spacing = 8
-        maxAndMinStackView.alignment = .leading
-        maxAndMinStackView.translatesAutoresizingMaskIntoConstraints = false
+       
         
-        self.view.addSubview(maxAndMinStackView)
+        // Set up constraints for max and min stack view
         NSLayoutConstraint.activate([
             maxAndMinStackView.topAnchor.constraint(equalTo: weatherStatusStackView1.bottomAnchor,constant: 20),
             maxAndMinStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 16),
             maxAndMinStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16)
         ])
+        // Set up constraints for city image view
         NSLayoutConstraint.activate([
             self.cityImageView.topAnchor.constraint(equalTo: maxAndMinStackView.bottomAnchor, constant: 20),
             self.cityImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -248,14 +266,20 @@ extension WeatherViewController
         ])
         
 
-        
+        // Call a function to hide UI elements until weather data is fetched
         hideUIElements() // Hiding all UI Elements until fetch the weather Data
 
     }
     func showErrorAlert(withMessage message:String)
     {
+        // Create an alert controller with a title "Error" and the provided message. The preferredStyle is set to .alert, which shows a standard pop-up alert.
+
         let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        // Add an action to the alert with the button labeled "OK". This action will dismiss the alert when tapped.
+
         alertController.addAction(UIAlertAction(title: "OK", style: .default))
+        // Present the alert to the user. 'self' refers to the current view controller, and 'animated: true' makes the presentation animated.
+
         self.present(alertController, animated: true)
 
     }
