@@ -26,6 +26,8 @@ The app is designed using the MVVM-C architecture:
 - **Model**: Contains data structures such as 'WeatherObj', 'ResultCitiesModel'
 - **ViewModel**: Includes classes like 'WeatherViewModel' and 'SearchCityViewModel' that handle data fetching, processing, and provide data to the views.
 - **View**: Consists of view controllers and UI components that present the data to the user.
+- - **Coordinator** Handles The Navigation logic, bettween the screens
+
 
 ## Unit Testing
 - Validated Response of Weather data with Dummy data
